@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="map" class="flex-grow-1"></div>
+{% endblock %}
+
+{% block additionaljs %}
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin=""></script>
+
+<script>
+    // Initialize the map
+    // Set view to a default location (e.g., New York City) and zoom level
+    const map = L.map('map').setView([40.7128, -74.0060], 13);
+
+    // Add a Tile Layer (OpenStreetMap is a good default choice)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Optional: Add a marker to the map
+    L.marker([40.7128, -74.0060]).addTo(map)
+        .bindPopup('This is New York City!')
+        .openPopup();
+</script>
+{% endblock %}
