@@ -32,4 +32,6 @@ def create_app(config_name='default'):
     def about():
         return render_template("about.html")
 
+    from api.land_properties import land_properties
+    app.register_blueprint(land_properties)
     return app
