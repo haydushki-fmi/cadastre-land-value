@@ -1,13 +1,18 @@
 import json
 
 from flask import Blueprint, jsonify, request
+from shapely.geometry.geo import shape
+from shapely.geometry.point import Point
+from shapely.prepared import prep
 
 from db import get_db
+from geoapify import get_geoapify_isoline
+from overpass import get_amenities_within_radius
 
-land_properties = Blueprint('land-properties', __name__, url_prefix='/api')
+land_properties = Blueprint('land-properties', __name__, url_prefix='/api/land-properties')
 
 
-@land_properties.route('/land-properties', methods=['GET'])
+@land_properties.route('/', methods=['GET'])
 def get_land_properties():
     min_lon = request.args.get('min_lon', type=float)
     min_lat = request.args.get('min_lat', type=float)
@@ -48,3 +53,71 @@ def get_land_properties():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@land_properties.route('/get-value', methods=['GET'])
+def get_value():
+    lat = request.args.get('lat', 42.6977, type=float)
+    lon = request.args.get('lon', 23.3242, type=float)
+    travel_type = request.args.get('travel_type', 'time', type=str)
+    travel_mode = request.args.get('travel_mode', 'walk', type=str)
+    travel_range = request.args.get('travel_range', '600', type=int)
+
+    # TODO: Maybe get the given cadastre item?
+
+    # TODO: For now get just the amenities and the isoline
+    # TODO: Get API Key from config
+    try:
+        isoline_polygon = get_geoapify_isoline(lat, lon, travel_type, travel_mode, travel_range,
+                                               'a1ce1640f23f4b90a312a3c0f36244ca')
+        # return jsonify(isoline_polygon)
+        # return shape(isoline_polygon['features'][0]['geometry']).wkt
+
+        # prepared_isoline = prep(isoline_polygon['features'][0]['geometry'])
+        prepared_isoline = prep(shape(isoline_polygon['features'][0]['geometry']))
+
+        overpass_amenities = get_amenities_within_radius(lat, lon, 1000, 'hospital')
+
+        amenities_within_isoline = []
+        for amenity in overpass_amenities:
+            if amenity['lat'] is not None and amenity['lon'] is not None:
+                # Shapely Point expects (longitude, latitude)
+                point = Point(amenity['lon'], amenity['lat'])
+                if prepared_isoline.contains(point):
+                    amenities_within_isoline.append(amenity)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    geojson_features = []
+    for amenity in amenities_within_isoline:
+        if 'lat' not in amenity or 'lon' not in amenity or 'id' not in amenity:
+            continue
+
+        geometry = {
+            'type': 'Point',
+            'coordinates': [amenity['lon'], amenity['lat']]
+        }
+
+        properties = {
+            'id': amenity['id']
+        }
+
+        if 'tags' in amenity and isinstance(amenity['tags'], dict):
+            properties['name'] = amenity['tags'].get('name', 'Unnamed Amenity')
+        else:
+            properties['name'] = 'Unknown'
+
+        feature = {
+            'type': 'Feature',
+            'geometry': geometry,
+            'properties': properties
+        }
+        geojson_features.append(feature)
+
+    geojson_features.append(isoline_polygon['features'][0])
+    geojson_data = {
+        'type': 'FeatureCollection',
+        'features': geojson_features
+    }
+
+    return jsonify(geojson_data)
