@@ -22,7 +22,9 @@ def get_land_properties():
     try:
         with get_db() as conn:
             with conn.cursor() as cursor:
-                sql_query = "SELECT ST_AsGeoJSON(ST_Transform(wkb_geometry, 4326)), ogc_fid, cadnum, proptype  FROM sofia_land_items"
+                sql_query = ("SELECT ST_AsGeoJSON(ST_Transform(wkb_geometry, 4326)),"
+                             " ST_AsGeoJSON(ST_Centroid(ST_Transform(wkb_geometry, 4326))),"
+                             " ogc_fid, cadnum, proptype  FROM sofia_land_items")
 
                 if all([min_lon, min_lat, max_lon, max_lat]):
                     sql_query += " WHERE ST_Intersects(wkb_geometry, ST_MakeEnvelope(%s, %s, %s, %s, 4326))"
@@ -41,9 +43,10 @@ def get_land_properties():
                             'geometry':
                                 json.loads(row[0]),
                             'properties': {
-                                'ogc_fid': row[1] if row[1] else 'Unknown',
-                                'cadnum': row[2] if row[2] else 'Unknown',
-                                'proptype': row[3] if row[3] else 'Unknown'
+                                'centroid': row[1],
+                                'ogc_fid': row[2],
+                                'cadnum': row[3] if row[3] else 'Unknown',
+                                'proptype': row[4] if row[4] else 'Unknown'
                             },
                         } for row in rows
                     ],
