@@ -8,6 +8,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+// Layer group for land properties
+const landPropertiesLayer = L.layerGroup().addTo(map);
+
 // Layer group for isolines
 const isolays = L.layerGroup().addTo(map);
 
@@ -105,14 +108,21 @@ function handleClickOnFeature(feature, layer) {
 }
 
 
-const fetchData = async () => {
+const fetchData = async (admDiv) => {
     try {
-        const response = await fetch('/api/land-properties');
+        const response = await fetch('/api/land-properties?adm_div=' + admDiv);
         const geojsonData = await response.json();
 
+        landPropertiesLayer
+            .clearLayers();
+        isolays.clearLayers();
         const geoJsonLayer = L.geoJSON(geojsonData, {
             onEachFeature: handleClickOnFeature
-        }).addTo(map);
+        }).addTo(landPropertiesLayer
+        );
+
+        // Focus to content
+        map.fitBounds(geoJsonLayer.getBounds());
 
         map.on('click', async (e) => {
             const {lat, lng} = e.latlng; // Get latitude and longitude from the click event
@@ -130,5 +140,3 @@ const fetchData = async () => {
         alert('Error loading JSON data');
     }
 };
-
-fetchData();

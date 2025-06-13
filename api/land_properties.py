@@ -18,6 +18,7 @@ def get_land_properties():
     min_lat = request.args.get('min_lat', type=float)
     max_lon = request.args.get('max_lon', type=float)
     max_lat = request.args.get('max_lat', type=float)
+    adm_div = request.args.get('adm_div', type=int)
 
     try:
         with get_db() as conn:
@@ -29,6 +30,9 @@ def get_land_properties():
                 if all([min_lon, min_lat, max_lon, max_lat]):
                     sql_query += " WHERE ST_Intersects(wkb_geometry, ST_MakeEnvelope(%s, %s, %s, %s, 4326))"
                     cursor.execute(sql_query, (min_lon, min_lat, max_lon, max_lat))
+                elif adm_div:
+                    sql_query += " JOIN administrative_divisions ON ST_Intersects(wkb_geometry, geom) AND id = %s"
+                    cursor.execute(sql_query, (adm_div,))
                 else:
                     sql_query += " LIMIT 100"
                     cursor.execute(sql_query)

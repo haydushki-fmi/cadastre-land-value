@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             amenityType: amenityTypeSelect.value
         };
         console.log('Form settings changed:', settings);
+        fetchData(settings.administrativeDivision);
     }
 
     // Call the function to populate the dropdown when the page loads
