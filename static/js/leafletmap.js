@@ -14,20 +14,6 @@ const landPropertiesLayer = L.layerGroup().addTo(map);
 // Layer group for isolines
 const isolays = L.layerGroup().addTo(map);
 
-// TODO: Just for debug purposes
-map.on('moveend', function (e) {
-    var bounds = map.getBounds();
-    if (bounds) {
-        var northeast = bounds.getNorthEast();
-        var southwest = bounds.getSouthWest();
-
-        // alert("Northeast: " + northeast + "\n" +
-        //     "Southwest: " + southwest);
-    } else {
-        alert("Bounds are not defined.");
-    }
-})
-
 // ----------------------------------------------
 // Helpers
 // ----------------------------------------------

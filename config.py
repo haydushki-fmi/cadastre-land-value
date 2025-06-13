@@ -20,6 +20,7 @@ class DevelopmentConfig(Config):
     PG_HOST = os.getenv('PG_HOST', 'localhost')
     PG_PORT = os.getenv('PG_PORT', '5432')
     PG_DATABASE = os.getenv('PG_DATABASE', 'dev_database')
+    GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 
 
 class ProductionConfig(Config):
@@ -30,10 +31,7 @@ class ProductionConfig(Config):
     PG_HOST = os.getenv('PG_HOST')
     PG_PORT = os.getenv('PG_PORT')
     PG_DATABASE = os.getenv('PG_DATABASE')
-
-    # You might also have a single DATABASE_URI for SQLAlchemy
-    # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    # SQLALCHEMY_TRACK_MODIFICATIONS = False
+    GEOAPIFY_API_KEY = os.getenv('GEOAPIFY_API_KEY')
 
 
 class TestingConfig(Config):

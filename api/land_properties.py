@@ -1,6 +1,6 @@
 import json
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from shapely.geometry.geo import shape
 from shapely.geometry.point import Point
 from shapely.prepared import prep
@@ -71,13 +71,9 @@ def get_value():
     travel_range = request.args.get('travel_range', '600', type=int)
     amenity_type = request.args.get('amenity_type', 'hospital', type=str)
 
-    # TODO: Maybe get the given cadastre item?
-
-    # TODO: For now get just the amenities and the isoline
-    # TODO: Get API Key from config
+    geoapify_api_key = current_app.config['GEOAPIFY_API_KEY']
     try:
-        isoline_polygon = get_geoapify_isoline(lat, lon, travel_type, travel_mode, travel_range,
-                                               'a1ce1640f23f4b90a312a3c0f36244ca')
+        isoline_polygon = get_geoapify_isoline(lat, lon, travel_type, travel_mode, travel_range, geoapify_api_key)
         prepared_isoline = prep(shape(isoline_polygon['features'][0]['geometry']))
 
         overpass_amenities = get_amenities_within_radius(lat, lon, 1000, amenity_type)
