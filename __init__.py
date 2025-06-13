@@ -44,6 +44,9 @@ def create_app(config_name='default'):
     from api.administrative_divisions import administrative_divisions
     app.register_blueprint(administrative_divisions)
 
+    from api.isoline_amenities import isoline_amenities
+    app.register_blueprint(isoline_amenities)
+
     # Just for debug purposes
     @app.route("/site-map")
     def site_map():

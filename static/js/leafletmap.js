@@ -23,7 +23,7 @@ async function fetchLandPropertyValue(lat, lng) {
         const travelMode = document.getElementById('travelMode').value;
         const amenityType = document.getElementById('amenityType').value;
 
-        const url = `/api/land-properties/get-value?` +
+        const url = `/api/isoline-amenities?` +
             `lat=${lat}&` +
             `lon=${lng}&` +
             `travel_range=${travelRange}&` +
