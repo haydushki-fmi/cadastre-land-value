@@ -11,17 +11,31 @@
                 </select>
             </div>
 
-            <label for="walkTime" class="col-sm-2 col-form-label">Време</label>
+            <label for="amenityType" class="col-sm-2 col-form-label">Точки на интерес</label>
             <div class="col-sm-4">
-                <input type="number" class="form-control" id="walkTime" value="5" min="1">
+                <select class="form-select" id="amenityType">
+                    <option selected value="hospital">Болница (hospital)</option>
+                    <option value="school">Училище (school)</option>
+                    <option value="cafe">Кафене (cafe)</option>
+                    <option value="restaurant">Ресторант (restaurant)</option>
+                    <option value="supermarket">Супермаркет (supermarket)</option>
+                    <option value="pharmacy">Аптека (pharmacy)</option>
+                    <option value="atm">Банкомат (ATM)</option>
+                </select>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label for="amenityType" class="col-sm-2 col-form-label">Точки на интерес</label>
-            <div class="col-sm-10">
-                <select class="form-select" id="amenityType">
-                    <option selected disabled>Изберете...</option>
+            <label for="travelRange" class="col-sm-2 col-form-label">Време (минути)</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" id="travelRange" value="5" min="1">
+            </div>
+
+            <label for="travelMode" class="col-sm-2 col-form-label">Метод на пътуване</label>
+            <div class="col-sm-4">
+                <select class="form-select" id="travelMode">
+                    <option selected value="walk">Пеша</option>
+                    <option disabled value="drive">С лека кола</option>
                 </select>
             </div>
         </div>

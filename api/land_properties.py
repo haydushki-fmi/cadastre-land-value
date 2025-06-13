@@ -69,6 +69,7 @@ def get_value():
     travel_type = request.args.get('travel_type', 'time', type=str)
     travel_mode = request.args.get('travel_mode', 'walk', type=str)
     travel_range = request.args.get('travel_range', '600', type=int)
+    amenity_type = request.args.get('amenity_type', 'hospital', type=str)
 
     # TODO: Maybe get the given cadastre item?
 
@@ -77,13 +78,9 @@ def get_value():
     try:
         isoline_polygon = get_geoapify_isoline(lat, lon, travel_type, travel_mode, travel_range,
                                                'a1ce1640f23f4b90a312a3c0f36244ca')
-        # return jsonify(isoline_polygon)
-        # return shape(isoline_polygon['features'][0]['geometry']).wkt
-
-        # prepared_isoline = prep(isoline_polygon['features'][0]['geometry'])
         prepared_isoline = prep(shape(isoline_polygon['features'][0]['geometry']))
 
-        overpass_amenities = get_amenities_within_radius(lat, lon, 1000, 'hospital')
+        overpass_amenities = get_amenities_within_radius(lat, lon, 1000, amenity_type)
 
         amenities_within_isoline = []
         for amenity in overpass_amenities:

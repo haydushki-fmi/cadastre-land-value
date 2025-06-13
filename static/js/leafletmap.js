@@ -31,18 +31,18 @@ map.on('moveend', function (e) {
 // ----------------------------------------------
 // Helpers
 // ----------------------------------------------
-/**
- * Fetches the value of a land property from the '/api/land-properties/get-value' endpoint.
- * This function expects latitude and longitude to be provided as query parameters to the API.
- *
- * @param {number} lat - The latitude of the clicked location.
- * @param {number} lng - The longitude of the clicked location.
- * @returns {Promise<any>} A promise that resolves with the JSON data from the API response,
- * or rejects if an error occurs during the fetch operation.
- */
 async function fetchLandPropertyValue(lat, lng) {
     try {
-        const url = `/api/land-properties/get-value?lat=${lat}&lon=${lng}`;
+        const travelRange = parseInt(document.getElementById('travelRange').value, 10) * 60;
+        const travelMode = document.getElementById('travelMode').value;
+        const amenityType = document.getElementById('amenityType').value;
+
+        const url = `/api/land-properties/get-value?` +
+            `lat=${lat}&` +
+            `lon=${lng}&` +
+            `travel_range=${travelRange}&` +
+            `travel_mode=${travelMode}&` +
+            `amenity_type=${amenityType}`;
 
         const response = await fetch(url);
         if (!response.ok) {

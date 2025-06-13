@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
     const administrativeDivisionSelect = document.getElementById('administrativeDivision');
-    const walkTimeInput = document.getElementById('walkTime');
-    const amenityTypeSelect = document.getElementById('amenityType');
 
     // Function to fetch data and populate the administrative division dropdown
     async function populateAdministrativeDivisions() {
@@ -34,24 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function handleFormChange() {
-        const settings = {
-            administrativeDivision: administrativeDivisionSelect.value,
-            walkTime: parseInt(walkTimeInput.value, 10),
-            amenityType: amenityTypeSelect.value
-        };
-        console.log('Form settings changed:', settings);
-        fetchData(settings.administrativeDivision);
+    function handleAdministrativeDivisionSelect() {
+        fetchData(administrativeDivisionSelect.value);
     }
 
     // Call the function to populate the dropdown when the page loads
     populateAdministrativeDivisions();
 
     // Add event listeners for changes
-    administrativeDivisionSelect.addEventListener('change', handleFormChange);
-    walkTimeInput.addEventListener('change', handleFormChange);
-    amenityTypeSelect.addEventListener('change', handleFormChange);
+    administrativeDivisionSelect.addEventListener('change', handleAdministrativeDivisionSelect);
 
-    // Initial log of settings when the page loads (after divisions are potentially loaded)
-    handleFormChange();
+    // Initial selection
+    handleAdministrativeDivisionSelect();
 });
