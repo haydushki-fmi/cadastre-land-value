@@ -41,6 +41,9 @@ def create_app(config_name='default'):
     from api.land_properties import land_properties
     app.register_blueprint(land_properties)
 
+    from api.administrative_divisions import administrative_divisions
+    app.register_blueprint(administrative_divisions)
+
     # Just for debug purposes
     @app.route("/site-map")
     def site_map():
