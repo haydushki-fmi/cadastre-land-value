@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, request, current_app
+from pyproj import Transformer
+from shapely import minimum_bounding_radius
 from shapely.geometry.geo import shape
 from shapely.geometry.point import Point
+from shapely.ops import transform
 from shapely.prepared import prep
 
 from geoapify import get_geoapify_isoline
@@ -21,9 +24,15 @@ def get_isoline_amenities():
     geoapify_api_key = current_app.config['GEOAPIFY_API_KEY']
     try:
         isoline_polygon = get_geoapify_isoline(lat, lon, travel_type, travel_mode, travel_range, geoapify_api_key)
-        prepared_isoline = prep(shape(isoline_polygon['features'][0]['geometry']))
+        isoline_shape = shape(isoline_polygon['features'][0]['geometry'])
+        prepared_isoline = prep(isoline_shape)
 
-        overpass_amenities = get_amenities_within_radius(lat, lon, 1000, amenity_type)
+        # Transform geometry to get bounding radius in metres
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:32635", always_xy=True).transform
+        utm_polygon = transform(transformer, isoline_shape)
+        isoline_radius = minimum_bounding_radius(utm_polygon)
+
+        overpass_amenities = get_amenities_within_radius(lat, lon, isoline_radius, amenity_type)
 
         amenities_within_isoline = []
         for amenity in overpass_amenities:
