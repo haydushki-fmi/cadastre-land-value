@@ -129,15 +129,15 @@ async function displayIsoline(latitude, longitude, color) {
 function handleClickOnFeature(feature, layer) {
     // Create popup
     if (feature.properties) {
-        let cadnum = feature.properties.cadnum;
-        let ogc_fid = feature.properties.ogc_fid;
-        let proptype = feature.properties.proptype;
+        let popupContent = '<h5>Информация за поземлен имот</h5>';
 
-        let jsString = `Cadastral Number: ${cadnum}<br/>
-                        OGC FID: ${ogc_fid}<br/>
-                        Property Type: ${proptype}`;
-
-        layer.bindPopup(jsString);
+        const excludedKeys = ['centroid'];
+        for (const key in feature.properties) {
+            if (feature.properties.hasOwnProperty(key) && !excludedKeys.includes(key)) {
+                popupContent += `<p><b>${key}:</b> ${feature.properties[key]}</p>`;
+            }
+        }
+        layer.bindPopup(popupContent);
     }
     // Display centroid
     layer.on('click', async function (e) {
