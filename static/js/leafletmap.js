@@ -92,12 +92,32 @@ async function displayIsoline(latitude, longitude, color) {
         const propertyValueData = await fetchLandPropertyValue(latitude, longitude);
         isolays.clearLayers();
         L.geoJSON(propertyValueData, {
-            style: {
-                fillColor: color,
-                color: color,
-                weight: 2,
-                opacity: 0.5,
-                fillOpacity: 0.2
+            style: function (feature) {
+                // Apply the style only to the polygon feature
+                if (feature.geometry.type === 'MultiPolygon') {
+                    return {
+                        fillColor: color,
+                        color: color,
+                        weight: 2,
+                        opacity: 0.5,
+                        fillOpacity: 0.2
+                    };
+                }
+                // Return default style or no style for points
+                return {};
+            },
+            onEachFeature: function (feature, layer) {
+                // Check if the feature is a Point and not the isoline polygon
+                if (feature.geometry.type === 'Point') {
+                    // Create popup content from feature properties
+                    let popupContent = '<h5>Информация за точката на интерес</h5>';
+                    for (const key in feature.properties) {
+                        if (feature.properties.hasOwnProperty(key)) {
+                            popupContent += `<p><b>${key}:</b> ${feature.properties[key]}</p>`;
+                        }
+                    }
+                    layer.bindPopup(popupContent);
+                }
             }
         }).addTo(isolays);
 
