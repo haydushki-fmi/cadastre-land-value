@@ -3,10 +3,12 @@
 const map = L.map('map').setView([42.6977, 23.3219], 15);
 
 // Layer group for land properties
-const landPropertiesLayer = L.layerGroup().addTo(map);
+const landPropertiesLayerGroup = L.layerGroup().addTo(map);
+
+var landPropertiesGeoJSONLayer;
 
 // Layer group for isolines
-const isolays = L.layerGroup().addTo(map);
+const isolinesLayerGroup = L.layerGroup().addTo(map);
 
 // ----------------------------------------------
 // Tile layers
@@ -90,7 +92,7 @@ async function fetchLandPropertyValue(lat, lng) {
 async function displayIsoline(latitude, longitude, color) {
     try {
         const propertyValueData = await fetchLandPropertyValue(latitude, longitude);
-        isolays.clearLayers();
+        isolinesLayerGroup.clearLayers();
         L.geoJSON(propertyValueData, {
             style: function (feature) {
                 // Apply the style only to the polygon feature
@@ -119,7 +121,7 @@ async function displayIsoline(latitude, longitude, color) {
                     layer.bindPopup(popupContent);
                 }
             }
-        }).addTo(isolays);
+        }).addTo(isolinesLayerGroup);
 
     } catch (error) {
         console.error('Error fetching or displaying clicked property value:', error);
@@ -141,6 +143,14 @@ function handleClickOnFeature(feature, layer) {
     }
     // Display centroid
     layer.on('click', async function (e) {
+
+        landPropertiesGeoJSONLayer.resetStyle();
+        layer.setStyle({
+            weight: 3,
+            color: '#ff0000',
+            fillOpacity: 0.5
+        });
+
         if (feature.properties && feature.properties.centroid) {
             const centroid = JSON.parse(feature.properties.centroid);
 
@@ -163,20 +173,20 @@ const fetchData = async (admDiv) => {
         const response = await fetch('/api/land-properties?adm_div=' + admDiv);
         const geojsonData = await response.json();
 
-        landPropertiesLayer
-            .clearLayers();
-        isolays.clearLayers();
-        const geoJsonLayer = L.geoJSON(geojsonData, {
+        landPropertiesLayerGroup.clearLayers();
+        isolinesLayerGroup.clearLayers();
+        landPropertiesGeoJSONLayer = L.geoJSON(geojsonData, {
             onEachFeature: handleClickOnFeature
-        }).addTo(landPropertiesLayer
-        );
+        }).addTo(landPropertiesLayerGroup);
 
         // Focus to content
-        map.fitBounds(geoJsonLayer.getBounds());
+        map.fitBounds(landPropertiesGeoJSONLayer.getBounds());
 
         map.on('click', async (e) => {
             const {lat, lng} = e.latlng; // Get latitude and longitude from the click event
             const color = 'green'
+
+            landPropertiesGeoJSONLayer.resetStyle();
 
             try {
                 displayIsoline(lat, lng, color)
