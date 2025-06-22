@@ -6,8 +6,8 @@ from shapely.geometry.point import Point
 from shapely.ops import transform
 from shapely.prepared import prep
 
-from geoapify import get_geoapify_isoline
-from overpass import get_amenities_within_radius
+from main_app.geoapify import get_geoapify_isoline
+from main_app.overpass import get_amenities_within_radius
 
 isoline_amenities = Blueprint('isoline-amenities', __name__, url_prefix='/api/isoline-amenities')
 

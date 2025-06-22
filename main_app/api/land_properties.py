@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, jsonify, request
 
-from db import get_db
+from main_app.db import get_db
 
 land_properties = Blueprint('land-properties', __name__, url_prefix='/api/land-properties')
 

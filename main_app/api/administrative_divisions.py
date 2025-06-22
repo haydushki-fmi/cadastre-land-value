@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from db import get_db
+from main_app.db import get_db
 
 administrative_divisions = Blueprint('administrative_divisions', __name__, url_prefix='/api/administrative-divisions')
 

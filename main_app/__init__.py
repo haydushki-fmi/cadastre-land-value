@@ -38,13 +38,13 @@ def create_app(config_name='default'):
     def about():
         return render_template("about.html")
 
-    from api.land_properties import land_properties
+    from main_app.api.land_properties import land_properties
     app.register_blueprint(land_properties)
 
-    from api.administrative_divisions import administrative_divisions
+    from main_app.api.administrative_divisions import administrative_divisions
     app.register_blueprint(administrative_divisions)
 
-    from api.isoline_amenities import isoline_amenities
+    from main_app.api.isoline_amenities import isoline_amenities
     app.register_blueprint(isoline_amenities)
 
     # Just for debug purposes
